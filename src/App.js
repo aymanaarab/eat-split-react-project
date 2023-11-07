@@ -26,53 +26,67 @@ function Button({ children, onclick }) {
   )
 }
 function App() {
-  const [friend,setfriends]=useState(initialFriends);
+  const [friend, setfriends] = useState(initialFriends);
   const [showaddfriend, setsaf] = useState(false);
+  const [selectedfrien, setsf] = useState(null);
+
+
+
+  function handleselectf(friend ) {
+    setsf({selectedfrien:friend});
+    console.log('before the return',selectedfrien)
+  }
+  
   function handleshowfriend() {
     setsaf((show) => !show)
   }
-  function addfriend(friend){
-    setfriends(friends=>[...friends,friend]);
+  function addfriend(friend) {
+    setfriends(friends => [...friends, friend]);
     setsaf(!showaddfriend);
     //setsaf((show) => !show)
-
   }
+
   return (
     <div className='app'>
       <div className='sidebar'>
 
-        <FriendList friends={friend} />
-        {showaddfriend && <FormaddFriend  onaddfriend={addfriend}/>}
+        <FriendList friends={friend} Onselection={handleselectf} />
+        {showaddfriend && <FormaddFriend onaddfriend={addfriend} Onselection={handleselectf} />}
+
         <Button onclick={handleshowfriend}>{showaddfriend ? 'Close' : 'Add friend'}</Button>
+
       </div>
-      <SplitButton />
+
+      {selectedfrien && <SplitButton selectedfrien={selectedfrien} />} 
+      
+    
     </div>
   );
 }
-function FriendList({friends}) {
+function FriendList({ friends, Onselection }) {
   // const friends = initialFriends;
   return (
     <ul>
       {friends.map((friend) =>
-        (<Friend friend={friend} key={friend.id} />))
+        (<Friend friend={friend} key={friend.id} Onselection={Onselection} />))
       } </ul>
   )
 }
-function Friend({ friend }) {
+function Friend({ friend, Onselection }) {
   return <li>
     <img src={friend.image} alt={friend.name} />
     <h3>{friend.name}</h3>
     {friend.balance < 0 && <p className='red'> You owe {friend.name} $ {Math.abs(friend.balance)} </p>}
     {friend.balance === 0 && <p> You are even with {friend.name}  </p>}
     {friend.balance > 0 && <p className='green'>  {friend.name} owes you $ {Math.abs(friend.balance)}  </p>}
-    <Button> Select</Button>
+    <Button onClick={() => Onselection((friend)) }> Select</Button>
   </li>
 }
 
-function FormaddFriend({onaddfriend}) {
+function FormaddFriend({ onaddfriend }) {
   function handlesubmit(e) {
     e.preventDefault();
-    if (!name || !image ) return ;
+    if (!name || !image) return;
     const id = crypto.randomUUID;
     //when we click into submit on the form then we create a new utilisateur 
     // with creating an array new friend that contain name from state image from  state random id and balance that 0
@@ -103,21 +117,21 @@ function FormaddFriend({onaddfriend}) {
     </form>
   )
 }
-function SplitButton() {
+function SplitButton(selectedfrien) {
   return (
     <form className='form-split-bill'>
-      <h2> Split a bill with X </h2>
+      <h2> Split a bill with {selectedfrien.name} </h2>
       <label>💰  bill value  </label>
       <input type='text' />
 
-      <label>💰  Your X expenses   </label>
+      <label>💰  Your  expenses   </label>
       <input type='text' />
-      <label>💰  X  expense  </label>
+      <label>💰  {selectedfrien.name}  expense  </label>
       <input type='text' disabled />
       <label> Whos paying the bill</label>
       <select>
         <option value='user'>You</option>
-        <option value='friend'> X</option>
+        <option value='friend'> {selectedfrien.name}</option>
       </select>
       <Button>Split bill</Button>
     </form>
