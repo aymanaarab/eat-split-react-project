@@ -28,12 +28,12 @@ function Button({ children, onclick }) {
 function App() {
   const [friend, setfriends] = useState(initialFriends);
   const [showaddfriend, setsaf] = useState(false);
-//   const [selectedfrien, setsf] = useState(null);
-// console.log("before clicking to the button",selectedfrien)
+
 const [selectedfriend,setselectedfriend]=useState(null);
 
   function handleselection(friend ) {
-   setselectedfriend(friend);
+   setselectedfriend(curent=> curent?.id ===friend.id ? null : friend);
+  setsaf(!showaddfriend)
     // console.log('after the click',selectedfrien)
   }
   
@@ -50,7 +50,7 @@ const [selectedfriend,setselectedfriend]=useState(null);
     <div className='app'>
       <div className='sidebar'>
 
-        <FriendList friends={friend} Onselection={handleselection} />
+        <FriendList friends={friend} Onselection={handleselection} selectedfrien={selectedfriend} />
 
         {showaddfriend && <FormaddFriend onaddfriend={addfriend}  />}
 
@@ -58,29 +58,30 @@ const [selectedfriend,setselectedfriend]=useState(null);
 
       </div>
 
-      {selectedfriend && <SplitButton  />} 
+      {selectedfriend && <SplitButton selectedfrien={selectedfriend} />} 
       
     
     </div>
   );
 }
-function FriendList({ friends, Onselection }) {
+function FriendList({ friends, Onselection, selectedfrien }) {
   // const friends = initialFriends;
   return (
     <ul>
       {friends.map((friend) =>
-        (<Friend friend={friend} key={friend.id} Onselection={Onselection} />))
+        (<Friend friend={friend} key={friend.id} Onselection={Onselection} selectedfrien={selectedfrien} />))
       } </ul>
   )
 }
-function Friend({ friend, Onselection }) {
-  return <li>
+function Friend({ friend, Onselection,selectedfrien}) {
+  const isselected= selectedfrien?.id===friend.id;
+  return <li className={isselected ? "selected" : ""}>
     <img src={friend.image} alt={friend.name} />
     <h3>{friend.name}</h3>
     {friend.balance < 0 && <p className='red'> You owe {friend.name} $ {Math.abs(friend.balance)} </p>}
     {friend.balance === 0 && <p> You are even with {friend.name}  </p>}
     {friend.balance > 0 && <p className='green'>  {friend.name} owes you $ {Math.abs(friend.balance)}  </p>}
-    <Button onclick={() => Onselection(friend) }> Select</Button>
+    <Button onclick={() => Onselection(friend) }> {isselected ? 'Close' : 'Select'}</Button>
   {/* I FIXE THE MOTHERFOKKIN ERROR ITS <buttton> is a componenet who has prop onclick not and <button> not an element html normal */}
   </li>
 }
@@ -119,7 +120,7 @@ function FormaddFriend({ onaddfriend }) {
     </form>
   )
 }
-function SplitButton(selectedfrien) {
+function SplitButton({selectedfrien}) {
   return (
     <form className='form-split-bill'>
       <h2> Split a bill with {selectedfrien.name} </h2>
