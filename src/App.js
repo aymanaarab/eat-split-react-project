@@ -28,13 +28,13 @@ function Button({ children, onclick }) {
 function App() {
   const [friend, setfriends] = useState(initialFriends);
   const [showaddfriend, setsaf] = useState(false);
-  const [selectedfrien, setsf] = useState(null);
+//   const [selectedfrien, setsf] = useState(null);
+// console.log("before clicking to the button",selectedfrien)
+const [selectedfriend,setselectedfriend]=useState(null);
 
-
-
-  function handleselectf(friend ) {
-    setsf({selectedfrien:friend});
-    console.log('before the return',selectedfrien)
+  function handleselection(friend ) {
+   setselectedfriend(friend);
+    // console.log('after the click',selectedfrien)
   }
   
   function handleshowfriend() {
@@ -50,14 +50,15 @@ function App() {
     <div className='app'>
       <div className='sidebar'>
 
-        <FriendList friends={friend} Onselection={handleselectf} />
-        {showaddfriend && <FormaddFriend onaddfriend={addfriend} Onselection={handleselectf} />}
+        <FriendList friends={friend} Onselection={handleselection} />
+
+        {showaddfriend && <FormaddFriend onaddfriend={addfriend}  />}
 
         <Button onclick={handleshowfriend}>{showaddfriend ? 'Close' : 'Add friend'}</Button>
 
       </div>
 
-      {selectedfrien && <SplitButton selectedfrien={selectedfrien} />} 
+      {selectedfriend && <SplitButton  />} 
       
     
     </div>
@@ -79,7 +80,8 @@ function Friend({ friend, Onselection }) {
     {friend.balance < 0 && <p className='red'> You owe {friend.name} $ {Math.abs(friend.balance)} </p>}
     {friend.balance === 0 && <p> You are even with {friend.name}  </p>}
     {friend.balance > 0 && <p className='green'>  {friend.name} owes you $ {Math.abs(friend.balance)}  </p>}
-    <Button onClick={() => Onselection((friend)) }> Select</Button>
+    <Button onclick={() => Onselection(friend) }> Select</Button>
+  {/* I FIXE THE MOTHERFOKKIN ERROR ITS <buttton> is a componenet who has prop onclick not and <button> not an element html normal */}
   </li>
 }
 
